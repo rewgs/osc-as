@@ -12,8 +12,6 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional
 
-import shtuil
-
 
 # TODO: Turns out the name attr is totally pointless. Can remove and thus can delete this dataclass entirely.
 @dataclass
@@ -105,6 +103,7 @@ class OpenStageControl:
         )
         self._packaged_app: Path = self._package_dir.joinpath("open-stage-control.app")
         self._app_dir: Path = Path(f"/Applications/Open Stage Control/v{self.version}")
+        self._app_dst: Path = self._app_dir.joinpath("Open Stage Control.app")
 
     def download(self) -> Optional[Exception]:
         """Downloads the source code for self.version to the user's Downloads directory. Returns the Exception if raised, otherwise None."""
@@ -201,19 +200,37 @@ class OpenStageControl:
         """Copies the packaged application to the user's Application folder."""
         os.chdir(self._package_dir)
         if not self._app_dir.exists():
-            self._app_dir.mkdir(parents=True)
-
+            self._app_dir.mkdir(parents=True, exist_ok=True)
         try:
-            _ = shutil.copytree(self._packaged_app, self._app_dir)
-        except FileExistsError as error:
+            _: Path = shutil.copytree(
+                self._packaged_app, self._app_dst, dirs_exist_ok=True
+            )
+        # NOTE: This *silently* deletes the application from the Applications directory!
+        except FileExistsError:
+            try:
+                shutil.rmtree(self._app_dir)
+            except OSError as error:
+                return error
+            try:
+                _: Path = shutil.copytree(self._packaged_app, self._app_dir)
+            except Exception as error:
+                return error
+        except Exception as error:
             return error
         return None
 
-    def post_install(self):
+    def post_install(self) -> Optional[Exception]:
         if self._unzipped_dir.exists():
-            self._unzipped_dir.rmdir()
+            try:
+                shutil.rmtree(self._unzipped_dir)
+            except OSError as error:
+                return error
         if self._download_dst.exists():
-            self._download_dst.unlink()
+            try:
+                self._download_dst.unlink()
+            except FileNotFoundError as error:
+                return error
+        return None
 
 
 apps: list[App] = [
@@ -289,6 +306,12 @@ def main():
     if e is not None:
         raise e
 
+    e = osc.post_install()
+    if e is not None:
+        raise e
+
+    print(f"Installed Open Stage Control {osc.version} to {osc._app_dir}")
+
 
 if __name__ == "__main__":
     if platform.system() != "Darwin":
@@ -296,7 +319,7 @@ if __name__ == "__main__":
             f"This script is not supported on {platform.system()}"
         )
 
-    if platform.machine != "arm64":
+    if platform.machine() != "arm64":
         raise NotImplementedError(
             f"This script is not supported on {platform.machine()}"
         )
