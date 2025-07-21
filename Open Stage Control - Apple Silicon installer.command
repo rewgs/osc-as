@@ -12,6 +12,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional
 
+__author__ = "Alex Ruger"
+
 
 # TODO: Turns out the name attr is totally pointless. Can remove and thus can delete this dataclass entirely.
 @dataclass
@@ -83,9 +85,8 @@ class App:
 
 
 # TODO:
-# - download() and unzip() share a lot of code and are a bit messy. Re-do and simplify.
-# - unzip() should take the return value of download() as an arg.
 # - Group npm-related methods with @npm decorator
+# - All of the os.chdir calls are probably pointless -- remove.
 class OpenStageControl:
     def __init__(self, version: str):
         self.version: str = version
