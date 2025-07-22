@@ -12,7 +12,7 @@ This python script downloads, builds, and installs Open Stage Control on Apple S
 >
 > Your username may be different than `admin`.
 
-2. A window requesting you to install the Xcode Command Line Tools may appear. If so, click `Install`. Once the installation is finished, repeat steps 2 and 3.
+2. A window requesting you to install the Xcode Command Line Tools may appear. If so, click `Install`.
 
 <p align="center">
   <img src="./assets/xcode cli tools.jpg" width="512"/>
