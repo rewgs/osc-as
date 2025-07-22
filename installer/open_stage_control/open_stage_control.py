@@ -1,8 +1,17 @@
 import os
 import shutil
 import subprocess
+from dataclasses import dataclass
 from pathlib import Path
-from typing import Optional
+from typing import Callable, Optional
+
+
+@dataclass
+class Failure:
+    """Failure is a small wrapper for functions and the Exceptions they raise for tracking up the call chain."""
+
+    func: Callable[[], Optional[Exception]]
+    error: Exception
 
 
 class OpenStageControl:
@@ -30,7 +39,7 @@ class OpenStageControl:
     def app_dir(self) -> Path:
         return self._app_dir
 
-    def download(self) -> Optional[Exception]:
+    def _download(self) -> Optional[Exception]:
         """Downloads the source code for self.version to the user's Downloads directory. Returns the Exception if raised, otherwise None."""
         if self._download_dst.exists():
             print(
@@ -61,7 +70,7 @@ class OpenStageControl:
 
         return None
 
-    def unzip(self) -> Optional[Exception]:
+    def _unzip(self) -> Optional[Exception]:
         """Unzips the downloaded source code for self.version to the user's Downloads directory. Returns the Exception if raised, otherwise None."""
         if self._unzipped_dir.exists():
             print(
@@ -87,7 +96,7 @@ class OpenStageControl:
 
         return None
 
-    def install_dependencies(self) -> Optional[Exception]:
+    def _install_dependencies(self) -> Optional[Exception]:
         """Runs `npm install` within the downloaded source code directory."""
         os.chdir(self._unzipped_dir)
         try:
@@ -96,7 +105,7 @@ class OpenStageControl:
             return error
         return None
 
-    def build(self) -> Optional[Exception]:
+    def _build(self) -> Optional[Exception]:
         """Runs `npm run build` within the downloaded source code directory."""
         os.chdir(self._unzipped_dir)
         try:
@@ -107,7 +116,7 @@ class OpenStageControl:
             return error
         return None
 
-    def package(self) -> Optional[Exception]:
+    def _package(self) -> Optional[Exception]:
         """Runs `npm run package` within the downloaded source code directory."""
         os.chdir(self._unzipped_dir)
         env = os.environ.copy()
@@ -119,6 +128,37 @@ class OpenStageControl:
             )
         except subprocess.CalledProcessError as error:
             return error
+        return None
+
+    def pre_install(self) -> Optional[list[Failure]]:
+        """Downloads Open Stage Control; unzips it; installs required dependencies; builds and packages Open Stage Control."""
+        failures: list[Failure] = []
+
+        e: Optional[Exception]
+
+        e = self._download()
+        if e is not None:
+            failures.append(Failure(func=self._download, error=e))
+
+        e = self._unzip()
+        if e is not None:
+            failures.append(Failure(func=self._unzip, error=e))
+
+        e = self._install_dependencies()
+        if e is not None:
+            failures.append(Failure(func=self._install_dependencies, error=e))
+
+        e = self._build()
+        if e is not None:
+            failures.append(Failure(func=self._build, error=e))
+
+        e = self._package()
+        if e is not None:
+            failures.append(Failure(func=self._package, error=e))
+
+        if len(failures) != 0:
+            return failures
+
         return None
 
     def install(self) -> Optional[Exception]:
@@ -145,6 +185,7 @@ class OpenStageControl:
         return None
 
     def post_install(self) -> Optional[Exception]:
+        """Cleans up after itself -- deletes the .zip and unzipped directory."""
         if self._unzipped_dir.exists():
             try:
                 shutil.rmtree(self._unzipped_dir)

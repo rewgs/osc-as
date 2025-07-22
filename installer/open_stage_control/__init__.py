@@ -1,3 +1,3 @@
-from .open_stage_control import OpenStageControl
+from .open_stage_control import Failure, OpenStageControl
 
-__all__ = ["OpenStageControl"]
+__all__ = ["OpenStageControl", "Failure"]

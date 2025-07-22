@@ -6,20 +6,12 @@ import platform
 import sys
 from typing import Optional
 
-from .open_stage_control import OpenStageControl
+from .open_stage_control import Failure, OpenStageControl
 
 __author__ = "Alex Ruger"
 
 
 def main():
-    e: Optional[Exception]
-
-    # e = install_xcode_cli_tools()
-    # if e is not None:
-    #     raise e
-
-    # install_dependencies()
-
     # TODO:
     # The version value should not be hard-coded; but at the moment, this is
     # the only version of Open Stage Control that supports Apple Silicon, so
@@ -28,26 +20,13 @@ def main():
     # latest release and use that unless a specific version is explicitly stated.
     osc = OpenStageControl(version="1.29.6")
 
-    e = osc.download()
-    if e is not None:
-        raise e
+    failures: Optional[list[Failure]] = osc.pre_install()
+    if failures is not None:
+        for f in failures:
+            print(f"Function {f.func} raised the following Exception: {f.error}")
+        raise Exception("Failed Open Stage Control pre-install. See above.")
 
-    e = osc.unzip()
-    if e is not None:
-        raise e
-
-    e = osc.install_dependencies()
-    if e is not None:
-        raise e
-
-    e = osc.build()
-    if e is not None:
-        raise e
-
-    e = osc.package()
-    if e is not None:
-        raise e
-
+    e: Optional[Exception]
     e = osc.install()
     if e is not None:
         raise e
