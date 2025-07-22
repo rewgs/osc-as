@@ -8,7 +8,7 @@ This python script downloads, builds, and installs Open Stage Control on Apple S
 4. A window requesting you to install the Xcode Command Line Tools may appear. If so, click `Install`. Once the installation is finished, repeat steps 2 and 3.
 
 <p align="center">
-  <img src="./assets/xcode cli tools.jpg"/>
+  <img src="./assets/xcode cli tools.jpg" width="448"/>
 </p>
 
 > [!NOTE]
