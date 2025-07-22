@@ -305,11 +305,13 @@ def main():
 
     # install_dependencies()
 
-    # TODO: The 1.26.6 value should not be hard-coded, but at the moment, this
-    # is the only version of Open Stage Control that supports Apple Silicon, so for now it's fine.
-    # However, in the future this script should automatically retrieve the latest release
-    # and use that unless a specific version is explicitly stated.
-    osc = OpenStageControl(version="1.26.6")
+    # TODO:
+    # The version value should not be hard-coded; but at the moment, this is
+    # the only version of Open Stage Control that supports Apple Silicon, so
+    # for now it's fine.
+    # However, in the future this script should automatically retrieve the
+    # latest release and use that unless a specific version is explicitly stated.
+    osc = OpenStageControl(version="1.29.6")
 
     e = osc.download()
     if e is not None:
