@@ -1,5 +1,3 @@
-#!/usr/bin/python3
-#
 # Builds, packages, and runs Open Stage Control for Apple Silicon.
 # Supports a minimum of Python v3.9.x.
 
