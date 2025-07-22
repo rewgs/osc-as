@@ -241,30 +241,32 @@ apps: list[App] = [
 ]
 
 
-def install_xcode_cli_tools() -> Optional[Exception]:
-    try:
-        # FIXME: `shell=True` is famously insecure. Try and figure out another way to do this.
-        result: str = (
-            subprocess.check_output(["xcode-select -p"], shell=True)
-            .decode("utf-8")
-            .strip()
-        )
-    except subprocess.CalledProcessError:
-        try:
-            _: subprocess.CompletedProcess[bytes] = subprocess.run(
-                ["xcode-select", "--install"]
-            )
-        except subprocess.CalledProcessError as error:
-            return error
-    else:
-        if result != "/Library/Developer/CommandLineTools":
-            try:
-                _: subprocess.CompletedProcess[bytes] = subprocess.run(
-                    ["xcode-select", "--install"]
-                )
-            except subprocess.CalledProcessError as error:
-                return error
-    return None
+# Looks like avoiding the xcode installation window is unavoidable, so commenting this out.
+#
+# def install_xcode_cli_tools() -> Optional[Exception]:
+#     try:
+#         # FIXME: `shell=True` is famously insecure. Try and figure out another way to do this.
+#         result: str = (
+#             subprocess.check_output(["xcode-select -p"], shell=True)
+#             .decode("utf-8")
+#             .strip()
+#         )
+#     except subprocess.CalledProcessError:
+#         try:
+#             _: subprocess.CompletedProcess[bytes] = subprocess.run(
+#                 ["xcode-select", "--install"]
+#             )
+#         except subprocess.CalledProcessError as error:
+#             return error
+#     else:
+#         if result != "/Library/Developer/CommandLineTools":
+#             try:
+#                 _: subprocess.CompletedProcess[bytes] = subprocess.run(
+#                     ["xcode-select", "--install"]
+#                 )
+#             except subprocess.CalledProcessError as error:
+#                 return error
+#     return None
 
 
 # TODO: Return values. Exceptions?
@@ -295,9 +297,10 @@ def install_dependencies() -> None:
 
 
 def main():
-    e: Optional[Exception] = install_xcode_cli_tools()
-    if e is not None:
-        raise e
+    e: Optional[Exception]
+    # e = install_xcode_cli_tools()
+    # if e is not None:
+    #     raise e
 
     install_dependencies()
 
