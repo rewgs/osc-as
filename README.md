@@ -7,6 +7,10 @@ This python script downloads, builds, and installs Open Stage Control on Apple S
 3. Type `python3 ./Open Stage Control - Apple Silicon installer.py`
 4. A window requesting you to install the Xcode Command Line Tools may appear. If so, click `Install`. Once the installation is finished, repeat steps 2 and 3.
 
+<p align="center">
+  <img src="./assets/xcode cli tools.jpg"/>
+</p>
+
 > [!NOTE]
 >
 > Note that you will only have to do this once -- subsequent executions of this script will not require you to install the Xcode Command Line Tools again.
