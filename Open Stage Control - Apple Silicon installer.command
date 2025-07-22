@@ -95,6 +95,10 @@ class OpenStageControl:
         self._app_dir: Path = Path(f"/Applications/Open Stage Control/v{self.version}")
         self._app_dst: Path = self._app_dir.joinpath("Open Stage Control.app")
 
+    @property
+    def app_dir(self) -> Path:
+        return self._app_dir
+
     def download(self) -> Optional[Exception]:
         """Downloads the source code for self.version to the user's Downloads directory. Returns the Exception if raised, otherwise None."""
         if self._download_dst.exists():
@@ -239,7 +243,34 @@ apps: list[App] = [
 ]
 
 
-def install_dependencies():
+def install_xcode_cli_tools() -> Optional[Exception]:
+    try:
+        # FIXME: `shell=True` is famously insecure. Try and figure out another way to do this.
+        result: str = (
+            subprocess.check_output(["xcode-select -p"], shell=True)
+            .decode("utf-8")
+            .strip()
+        )
+    except subprocess.CalledProcessError:
+        try:
+            _: subprocess.CompletedProcess[bytes] = subprocess.run(
+                ["xcode-select", "--install"]
+            )
+        except subprocess.CalledProcessError as error:
+            return error
+    else:
+        if result != "/Library/Developer/CommandLineTools":
+            try:
+                _: subprocess.CompletedProcess[bytes] = subprocess.run(
+                    ["xcode-select", "--install"]
+                )
+            except subprocess.CalledProcessError as error:
+                return error
+    return None
+
+
+# TODO: Return values. Exceptions?
+def install_dependencies() -> None:
     have_errors: list[App] = []
     for app in apps:
         if app.has_errors() and app not in have_errors:
@@ -257,13 +288,19 @@ def install_dependencies():
             app.print_errors()
 
     installed: list[App] = [app for app in apps if app.installed]
-    if len(installed) > 0:
+    if len(installed) == 0:
+        print("No apps were installed!")
+    else:
         print("The following apps were installed:")
         for app in installed:
             print(app.name)
 
 
 def main():
+    e: Optional[Exception] = install_xcode_cli_tools()
+    if e is not None:
+        raise e
+
     install_dependencies()
 
     # TODO: The 1.26.6 value should not be hard-coded, but at the moment, this
@@ -272,7 +309,7 @@ def main():
     # and use that unless a specific version is explicitly stated.
     osc = OpenStageControl(version="1.26.6")
 
-    e: Optional[Exception] = osc.download()
+    e = osc.download()
     if e is not None:
         raise e
 
@@ -300,7 +337,7 @@ def main():
     if e is not None:
         raise e
 
-    print(f"Installed Open Stage Control {osc.version} to {osc._app_dir}")
+    print(f"Installed Open Stage Control {osc.version} to {osc.app_dir}")
 
 
 if __name__ == "__main__":
