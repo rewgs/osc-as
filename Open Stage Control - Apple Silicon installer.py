@@ -225,20 +225,20 @@ class OpenStageControl:
         return None
 
 
-apps: list[App] = [
-    App(
-        # NOTE: User's shell needs to be updated.
-        name="brew",
-        install_cmd=[
-            "NONINTERACTIVE=1",
-            "/bin/bash -c",
-            "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)",
-        ],
-    ),
-    # Currently download the OSC source code via curl, so git is unnecessary.
-    # App(name="git", install_cmd=["brew", "install", "git"]),
-    App(name="node", install_cmd=["brew", "install", "node@20"]),
-]
+# apps: list[App] = [
+#     App(
+#         # NOTE: User's shell needs to be updated.
+#         name="brew",
+#         install_cmd=[
+#             "NONINTERACTIVE=1",
+#             "/bin/bash -c",
+#             "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)",
+#         ],
+#     ),
+#     # Currently download the OSC source code via curl, so git is unnecessary.
+#     # App(name="git", install_cmd=["brew", "install", "git"]),
+#     App(name="node", install_cmd=["brew", "install", "node@20"]),
+# ]
 
 
 # Looks like avoiding the xcode installation window is unavoidable, so commenting this out.
@@ -269,31 +269,32 @@ apps: list[App] = [
 #     return None
 
 
+# FIXME: Homebrew installation is raising `FileNotFoundError: [Errno 2] No such file or directory: 'NONINTERACTIVE=1'`
 # TODO: Return values. Exceptions?
-def install_dependencies() -> None:
-    have_errors: list[App] = []
-    for app in apps:
-        if app.has_errors() and app not in have_errors:
-            have_errors.append(app)
-            continue
-        error: Optional[Exception] = app.install()
-        if error is not None:
-            app.errors.append(error)
-            if app not in have_errors:
-                have_errors.append(app)
-
-    if len(have_errors) > 0:
-        print("The following apps encountered errors:")
-        for app in have_errors:
-            app.print_errors()
-
-    installed: list[App] = [app for app in apps if app.installed]
-    if len(installed) == 0:
-        print("No apps were installed!")
-    else:
-        print("The following apps were installed:")
-        for app in installed:
-            print(app.name)
+# def install_dependencies() -> None:
+#     have_errors: list[App] = []
+#     for app in apps:
+#         if app.has_errors() and app not in have_errors:
+#             have_errors.append(app)
+#             continue
+#         error: Optional[Exception] = app.install()
+#         if error is not None:
+#             app.errors.append(error)
+#             if app not in have_errors:
+#                 have_errors.append(app)
+#
+#     if len(have_errors) > 0:
+#         print("The following apps encountered errors:")
+#         for app in have_errors:
+#             app.print_errors()
+#
+#     installed: list[App] = [app for app in apps if app.installed]
+#     if len(installed) == 0:
+#         print("No apps were installed!")
+#     else:
+#         print("The following apps were installed:")
+#         for app in installed:
+#             print(app.name)
 
 
 def main():
@@ -302,7 +303,7 @@ def main():
     # if e is not None:
     #     raise e
 
-    install_dependencies()
+    # install_dependencies()
 
     # TODO: The 1.26.6 value should not be hard-coded, but at the moment, this
     # is the only version of Open Stage Control that supports Apple Silicon, so for now it's fine.
