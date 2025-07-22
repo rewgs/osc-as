@@ -8,18 +8,10 @@ import platform
 import shutil
 import subprocess
 import sys
-from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional
 
 __author__ = "Alex Ruger"
-
-
-# TODO: Turns out the name attr is totally pointless. Can remove and thus can delete this dataclass entirely.
-@dataclass
-class Error:
-    name: str
-    error: Exception
 
 
 class App:
@@ -43,7 +35,7 @@ class App:
         if p is not None:
             path, error = self._str_to_path(p)
             if error is not None:
-                self.errors.append(Error(name="path", error=error))
+                self.errors.append(error)
             if path is not None:
                 self.installed = True
                 self.path = path
@@ -53,7 +45,7 @@ class App:
         self.install_cmd: list[str] = install_cmd
         self.installed: bool = False
         self.path: Optional[Path] = None
-        self.errors: list[Error] = []
+        self.errors: list[Exception] = []
 
         self._get_path()
 
@@ -77,16 +69,13 @@ class App:
         if self.has_errors():
             if self.num_errors() == 1:
                 print(f"An error occurred with {self.name}:")
-                print(self.errors[0].error)
+                print(self.errors[0])
             else:
                 print(f"The following errors occurred with {self.name}:")
                 for error in self.errors:
-                    print(error.error)
+                    print(error)
 
 
-# TODO:
-# - Group npm-related methods with @npm decorator
-# - All of the os.chdir calls are probably pointless -- remove.
 class OpenStageControl:
     def __init__(self, version: str):
         self.version: str = version
@@ -258,7 +247,7 @@ def install_dependencies():
             continue
         error: Optional[Exception] = app.install()
         if error is not None:
-            app.errors.append(Error(name="install", error=error))
+            app.errors.append(error)
             if app not in have_errors:
                 have_errors.append(app)
 
