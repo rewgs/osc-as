@@ -28,13 +28,13 @@ This python script downloads, builds, and installs Open Stage Control on Apple S
     <img src="./assets/node.jpg" width="512"/>
 </p>
 
-4. Download this repo or the [individual Python file](<./Open Stage Control - Apple Silicon installer.py>).
-5. Open a new Terminal window and navigate to where you downloaded the aforementioned Python file.
+4. Download this repo.
+5. Open a new Terminal window and navigate to the `installer` directory within where you downloaded the aforementioned Python file.
 
 > [!NOTE]
 >
 > If you're unsure how to do this, follow the instructions on [this page](https://support.apple.com/guide/terminal/open-new-terminal-windows-and-tabs-trmlb20c7888/mac) under the section titled `Open new Terminal windows or tabs from the Finder`.
 
-6. Type `python3 Open Stage Control - Apple Silicon installer.py`
+6. Type `python3 main.py`
 
 7. A terminal window will appear -- wait for it to say that the process has completed, and then navigate to `/Applications/Open Stage Control` to run the newly-built app.
