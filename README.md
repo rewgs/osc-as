@@ -5,7 +5,7 @@ This python script downloads, builds, and installs Open Stage Control on Apple S
 1. [Install Homebrew](https://brew.sh/). Be sure to follow the instructions that appear at the end of the installation process. At the time of writing, they look like this:
 
 <p align="center">
-    <img src="./assets/homebrew.jpg"/>
+    <img src="./assets/homebrew.jpg" width="512"/>
 </p>
 
 > [!NOTE]
@@ -15,7 +15,7 @@ This python script downloads, builds, and installs Open Stage Control on Apple S
 2. A window requesting you to install the Xcode Command Line Tools may appear. If so, click `Install`. Once the installation is finished, repeat steps 2 and 3.
 
 <p align="center">
-  <img src="./assets/xcode cli tools.jpg" width="448"/>
+  <img src="./assets/xcode cli tools.jpg" width="512"/>
 </p>
 
 > [!NOTE]
@@ -25,7 +25,7 @@ This python script downloads, builds, and installs Open Stage Control on Apple S
 3. Install node: `brew install node@20`. Once again, be sure to follow the instructions that appear at the end of the installation process. At the time of writing, they look like this:
 
 <p align="center">
-    <img src="./assets/node.jpg"/>
+    <img src="./assets/node.jpg" width="512"/>
 </p>
 
 4. Download this repo or the [individual Python file](<./Open Stage Control - Apple Silicon installer.py>).
