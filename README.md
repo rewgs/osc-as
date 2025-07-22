@@ -13,6 +13,6 @@ This python script downloads, builds, and installs Open Stage Control on Apple S
 
 > [!NOTE]
 >
-> Note that you will only have to do this once -- subsequent executions of this script will not require you to install the Xcode Command Line Tools again.
+> You will only have to install the Xcode Command Line Tools once -- subsequent executions of this script will skip this step.
 
 5. A terminal window will appear -- wait for it to say that the process has completed, and then navigate to `/Applications/Open Stage Control` to run the newly-built app.
