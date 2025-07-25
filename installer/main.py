@@ -6,7 +6,7 @@ import platform
 import sys
 from typing import Optional
 
-from .open_stage_control import Failure, OpenStageControl
+from open_stage_control import Failure, OpenStageControl
 
 __author__ = "Alex Ruger"
 
