@@ -13,12 +13,12 @@ __author__ = "Alex Ruger"
 
 def main():
     # TODO:
-    # The version value should not be hard-coded; but at the moment, this is
-    # the only version of Open Stage Control that supports Apple Silicon, so
-    # for now it's fine.
-    # However, in the future this script should automatically retrieve the
-    # latest release and use that unless a specific version is explicitly stated.
-    osc = OpenStageControl(version="1.29.6")
+    # The version value should not be hard-coded.
+    # This is the most recent version.
+    # The first version to support Apple Silicon is v1.29.6.
+    # In the future, this script should automatically retrieve the
+    # latest release and use that *unless a specific version is explicitly stated*.
+    osc = OpenStageControl(version="1.29.7")
 
     failures: Optional[list[Failure]] = osc.pre_install()
     if failures is not None:
