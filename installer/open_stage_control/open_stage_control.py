@@ -183,7 +183,7 @@ class OpenStageControl:
         """Downloads Open Stage Control; unzips it; installs required dependencies; builds and packages Open Stage Control."""
         failures: list[Failure] = []
 
-        e: Optional[Exception]
+        e: Optional[Exception] = None
 
         e = self._download()
         if e is not None:
