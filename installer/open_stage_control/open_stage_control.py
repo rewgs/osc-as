@@ -1,17 +1,32 @@
 import os
 import shutil
+import ssl
 import subprocess
-from dataclasses import dataclass
+from http.client import HTTPResponse
 from pathlib import Path
-from typing import Callable, Optional
+from typing import Optional
+from urllib.error import URLError
+from urllib.parse import urlparse
+from urllib.request import urlopen
+
+from semver import SemVer
+
+from .failure import Failure
+
+# This is the first version to support Apple Silicon.
+MINIMUM_VERSION: str = "1.29.6"
 
 
-@dataclass
-class Failure:
-    """Failure is a small wrapper for functions and the Exceptions they raise for tracking up the call chain."""
+# TODO:
+def get_latest():
+    """
+    Returns the newest available version of Open Stage Control via
+    https://api.github.com/repos/jean-emmanuel/open-stage-control/releases/latest
+    """
 
-    func: Callable[[], Optional[Exception]]
-    error: Exception
+
+def get_versions():
+    """Returns a list of all versions compatible with Apple Silicon between MINIMUM_VERSION and LATEST_VERSION."""
 
 
 class OpenStageControl:
@@ -19,6 +34,7 @@ class OpenStageControl:
 
     def __init__(self, version: str):
         self.version: str = version
+        # TODO: Check if this is a valid URL, make sure it exists, etc.
         self._url: str = (
             f"https://github.com/jean-emmanuel/open-stage-control/archive/refs/tags/v{self.version}.zip"
         )
@@ -39,6 +55,33 @@ class OpenStageControl:
     def app_dir(self) -> Path:
         return self._app_dir
 
+    @staticmethod
+    def _test_url(url: str) -> tuple[Optional[HTTPResponse], Optional[Exception]]:
+        # ctx: ssl.SSLContext = ssl.SSLContext(protocol=ssl.PROTOCOL_SSLv3)
+        try:
+            _: tuple[str, ...] = urlparse(url)
+        except ValueError as err:
+            print(f"Could not parse url: {url}")
+            return None, err
+        except Exception as err:
+            print(f"An unexpected error occurred while checking URL {url}: {err}")
+            return None, err
+        try:
+            with urlopen(url, timeout=5) as response:
+                # Check the status code. Status codes in the 200s and 300s generally indicate success
+                if response.status >= 200 or response.status < 400:
+                    return response, None
+                # Does this need an else?
+        except URLError as err:
+            print(f"Error reaching URL {url}: {err.reason}")
+            return None, err
+        except TimeoutError as err:
+            print(f"Timeout reaching URL {url}")
+            return None, err
+        except Exception as err:  # Catch any other unexpected errors
+            print(f"An unexpected error occurred while checking URL {url}: {err}")
+            return None, err
+
     def _download(self) -> Optional[Exception]:
         """Downloads the source code for self.version to the user's Downloads directory. Returns the Exception if raised, otherwise None."""
         if self._download_dst.exists():
@@ -46,6 +89,12 @@ class OpenStageControl:
                 f"Open Stage Control v{self.version} already downloaded to {self._download_dst}"
             )
             return None
+
+        response, err = self._test_url(self._url)
+        if err is not None:
+            raise err
+        if response is None:
+            raise Exception(f"No response from {self._url}")
 
         os.chdir(self._downloads)
         try:

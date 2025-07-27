@@ -1,14 +1,45 @@
 # Builds, packages, and runs Open Stage Control for Apple Silicon.
-# Supports a minimum of Python v3.9.x.
+# Supports a minimum of Python v3.8.2 on macOS Big Sur.
 
 
 import platform
 import sys
+import venv
+from pathlib import Path
 from typing import Optional
 
+import requests  # NOTE: Requires venv
+import semver  # NOTE: Requires venv
 from open_stage_control import Failure, OpenStageControl
 
 __author__ = "Alex Ruger"
+
+
+def in_venv(venv_path: Optional[Path] = None) -> bool:
+    """
+    Determines if the current process is running in a virtual environment.
+    If venv_path is not None, will check if running in a specific virtual environment;
+    otherwise will check if running in any virtual environment.
+    """
+    # TODO: Adapt this code to the new point of this function (see docstring).
+    #
+    # if sys.prefix != sys.base_prefix and sys.prefix != sys.base_exec_prefix:
+    #     if venv_path is not None:
+    #
+    # return False
+
+
+def get_interpreter() -> Path:
+    """Returns a Path to the current base Python interpreter binary."""
+    interpreter: Path = Path(sys.base_prefix).resolve(strict=True)
+    if interpreter.is_dir():
+        try:
+            resolved = interpreter.joinpath("bin", "python3").resolve(strict=True)
+        except FileNotFoundError as error:
+            raise error
+        else:
+            return resolved
+    return interpreter
 
 
 def main():
@@ -50,18 +81,23 @@ if __name__ == "__main__":
         )
 
     # TODO:
-    # The oldest version of macOS that runs on M1 is Big Sur, which I think has
-    # Python 2 installed (which we're guarding against) and Python v3.7.3 or
-    # v3.8.2 (I've seen both reported; need to confirm which), so let's make
-    # sure this script supports down to that.
+    # The oldest version of macOS that runs on M1 is Big Sur, which has both
+    # Python 2 installed (which we're guarding against) and Python v3.8.2.
     major: int = sys.version_info[0]
     minor: int = sys.version_info[1]
+    micro: int = sys.version_info[2]
 
     if major < 3:
         raise RuntimeError("This script requires Python 3!")
-    if minor < 9:
+    if minor < 8:
         raise RuntimeWarning(
-            "This script assumes Python 3.9. Cannot guarantee that this will work correctly."
+            "This script assumes Python 3.8.2 or higher. Cannot guarantee that this will work correctly."
         )
+    if micro < 2:
+        raise RuntimeWarning(
+            "This script assumes Python 3.8.2 or higher. Cannot guarantee that this will work correctly."
+        )
+
+    # TODO: Check for venv at ~/.local/share/osc-as/ and run main() within that via a new process.
 
     main()
