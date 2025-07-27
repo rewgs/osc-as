@@ -1,7 +1,7 @@
-from .app import App
+from .dep import Dep
 
-apps: list[App] = [
-    App(
+deps: list[Dep] = [
+    Dep(
         # NOTE: User's shell needs to be updated.
         name="brew",
         install_cmd=[
@@ -12,5 +12,5 @@ apps: list[App] = [
     ),
     # Currently download the OSC source code via curl, so git is unnecessary.
     # App(name="git", install_cmd=["brew", "install", "git"]),
-    App(name="node", install_cmd=["brew", "install", "node@20"]),
+    Dep(name="node", install_cmd=["brew", "install", "node@20"]),
 ]

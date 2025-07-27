@@ -4,8 +4,8 @@ from pathlib import Path
 from typing import Optional
 
 
-class App:
-    """App provides a wrapper for applications/dependencies required for running Open Stage Control from source."""
+class Dep:
+    """Dep provides a wrapper for dependencies required for running Open Stage Control from source."""
 
     @staticmethod
     def _str_to_path(p: str) -> tuple[Optional[Path], Optional[Exception]]:
