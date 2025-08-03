@@ -9,8 +9,6 @@ from urllib.error import URLError
 from urllib.parse import urlparse
 from urllib.request import urlopen
 
-from semver import SemVer
-
 from .failure import Failure
 
 # This is the first version to support Apple Silicon.
